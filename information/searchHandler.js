@@ -21,6 +21,16 @@ var getPersonalInfo = module.exports.getPersonalInfo = function(session, results
   .get()
   .then((res) => {
     session.conversationData.personalData = res;
+    var intent = session.conversationData.intent;
+    if(intent == 'personalNumber'){
+      session.beginDialog('personalPhoneRender');
+    }else if (intent == 'personalMail'){
+      session.beginDialog('personalMailRender');
+    }else if (intent == 'personalSkills'){
+      session.beginDialog('personalSkillsRender');
+    }else{
+      session.send("your query was not find. Please try again.")
+    }
   }).catch((err) => {
     console.log(err);
     session.endConversation(`Sorry, I was not able to access your personal data !`);

@@ -5,31 +5,30 @@ var sendPersonalSkills = module.exports.sendPersonalSkills = function(session){
   var skills = session.conversationData.personalData.value;
   var botResponse = session.conversationData.message;
   var message = botResponse + ' ' + skills;
-  var choiceMessage = 'Do you want to add new skills ?'
   session.send(message);
-  builder.Prompts.confirm(session, choiceMessage);
 }
 
 var addSkills = module.exports.addSkills = function(session, results){
-  if(results.response){
-    var message = "Please enter your skills. Please separate each of them with a coma. "
+    var message = "Please enter your skills. Separate each of them with a coma. "
     builder.Prompts.text(session, message);
-  }else{
-    session.endDialog();
-  }
 }
 
 var confirmSkills = module.exports.confirmSkills = function(session, results){
+
   var skillsToAdd = results.response.split(',');
-  var skills = (session.conversationData.personalData.value).concat(skillsToAdd);
-  var message = "Is it the correct skills you want to add ?"
-  builder.prompts.confirm(session, message);
+  session.conversationData.skills = skillsToAdd
+  var message = "Are you sure to add : " + skillsToAdd;
+  builder.Prompts.confirm(session, message);
 }
 
-var updateSkills = module.exports.updateSkills = function(session, results){
+var updateSkills = module.exports.updateSkills = function(session, results, next){
+
   if(results.response){
-    session.send('OK');
-    /*var client = MicrosoftGraphClient.Client.init({
+    session.send('I have just updated your profile.');
+    var skills = (session.conversationData.personalData.value).concat(session.conversationData.skills);
+
+    console.log(skills);
+    var client = MicrosoftGraphClient.Client.init({
       authProvider: (done) => {
         done(null, session.conversationData.token);
       }
@@ -39,11 +38,12 @@ var updateSkills = module.exports.updateSkills = function(session, results){
     .patch({"skills": skills})
     .then((res) => {
       console.log(res);
+      session.send('I have just updated your profile.');
     }).catch((err) => {
+      session.send('I was not able to update your profile');
       console.log(err);
-    });*/
+    });
   }else{
-    session.beginDialog('addPersonalSkills');
+    session.beginDialog('updatePersonalSkill');
   }
-
 }

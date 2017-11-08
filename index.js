@@ -67,26 +67,63 @@ bot.dialog('personalPhoneRender', [
   function(session, results){
     phoneInfo.confirmationData(session, results);
   },
-  function(session, results){
+  function(session, results, next){
     phoneInfo.changeInfo(session, results);
+    next();
+  },
+  function(session){
+    session.endDialog('I hope my answer helps you. Don\'t hesitate to ask me another question');
   }
 ]);
 
 bot.dialog('personalSkillsRender', [
-  function(session){
+  function(session, results, next){
     skillsInfo.sendPersonalSkills(session);
+    next();
+  },
+  function(session, results, next){
+    session.beginDialog('updatePersonalSkill');
+    next();
+  },
+  function(session){
+    session.endDialog('I hope my answer helps you. Don\'t hesitate to ask me another question');
+  }
+]);
+
+bot.dialog('updatePersonalSkill', [
+  function(session){
+    var choiceMessage = 'Do you want to add new skills ?'
+    builder.Prompts.confirm(session, choiceMessage);
+  },
+  function(session, results, next){
+    if (results.response){
+      next()
+    }else{
+      session.endDialog();
+    }
   },
   function(session, results, next){
     skillsInfo.addSkills(session, results);
   },
   function(session, results, next){
+    skillsInfo.confirmSkills(session, results);
+  },
+  function(session, results, next){
     skillsInfo.updateSkills(session, results);
+    next();
+  },
+  function(session){
+    session.endDialog();
   }
-]);
+])
 
 bot.dialog('personalMailRender', [
+  function(session, results, next){
+    mailInfo.sendPersonalInfo(session);
+    next();
+  },
   function(session){
-    mailInfo.sendPersonalInfo(session)
+    session.endDialog('I hope my answer helps you. Don\'t hesitate to ask me another question');
   }
 ]);
 
@@ -97,5 +134,6 @@ bot.dialog('questions', function(session, args){
 bot.dialog('/', [
   function (session, args, next) {
     session.send('No intent matched');
+    session.endConversation();
   }
 ]);

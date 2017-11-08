@@ -20,10 +20,8 @@ var confirmationData = module.exports.confirmationData = function(session, resul
 }
 
 var changeInfo = module.exports.changeInfo = function(session, results){
-  if(!results.response){
-    session.send('Okay. Don\'t hesitate to ask me another question');
-  } else {
-    var message = 'Please give me your new number, I would update the database.';
+  if(results.response){
+    var message = 'I don\'t have the authorization yet for updating your phone number.';
     session.send(message);
   }
 }
